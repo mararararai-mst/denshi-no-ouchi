@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>電子のおうち ｜ 中3理科 発展</title>
+<meta property="og:title" content="電子のおうち 〜電子配置でみるイオン｜中3理科 発展〜">
+<meta property="og:description" content="電子配置のしくみから、Na⁺・Mg²⁺・K⁺・Ca²⁺・Cl⁻・O²⁻・S²⁻ の価数の必然性と、陽イオン／陰イオンの違いを操作で発見">
+<meta property="og:type" content="website">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: "Hiragino Maru Gothic ProN", "Rounded Mplus 1c", "Yu Gothic UI", sans-serif;
+  background: #e8ecf3;
+  user-select: none;
+  touch-action: none;
+}
+:root {
+  --noble-gold:    #f5b820;
+  --shell-K:       #ffd6e0;
+  --shell-L:       #d6e8ff;
+  --shell-M:       #d8f3dc;
+  --shell-N:       #fff0c8;
+  --lose-color:    #ff5577;
+  --gain-color:    #40b860;
+  --cation-bg:     linear-gradient(135deg, #fff0f3 0%, #ffe5ec 50%, #ffeef2 100%);
+  --anion-bg:      linear-gradient(135deg, #eef4ff 0%, #e0eaff 50%, #eef4ff 100%);
+  --neutral-bg:    linear-gradient(135deg, #e8f4ff 0%, #fff0f8 50%, #f0ffe8 100%);
+  --cation-accent: #e85a8c;
+  --anion-accent:  #4a7ec8;
+}
+#app {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  height: 100%;
+  margin: 0 auto;
+  background: var(--neutral-bg);
+  box-shadow: 0 0 24px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: background 0.5s;
+}
+body[data-stage="4"] #app { background: var(--cation-bg); }
+body[data-stage="5"] #app { background: var(--anion-bg); }
+body[data-stage="6"] #app { background: linear-gradient(135deg, #fff0f3 0%, #f0f0ff 50%, #eef4ff 100%); }
+
+/* ── ヘッダー ── */
+.header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 30;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+.title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #4a7ec8;
+  text-shadow: 0 2px 0 #fff, 0 0 8px rgba(255,255,255,0.9);
+  pointer-events: auto;
+}
+body[data-stage="4"] .title { color: var(--cation-accent); }
+body[data-stage="5"] .title { color: var(--anion-accent); }
+
+.stage-indicator { display: flex; gap: 4px; pointer-events: auto; }
+.dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: #fff; border: 2px solid #b6d1ff;
+  transition: all 0.3s;
+}
+.dot.active { background: #6fa1ff; transform: scale(1.15); }
+
+/* ── ステージ ── */
+.stage { position: absolute; inset: 0; display: none; }
+.stage.active { display: block; }
+
+/* ── 共通メッセージ ── */
+.message {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.96);
+  padding: 8px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #444;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 10;
+  text-align: center;
+  max-width: 92%;
+  line-height: 1.5;
+}
+.message .sub { font-size: 11px; font-weight: normal; color: #888; margin-top: 2px; }
+.stage-label {
+  display: inline-block;
+  background: #ffd88a;
+  color: #8b5a00;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 11px;
+  margin-right: 5px;
+}
+body[data-stage="4"] .stage-label { background: #ffc0d0; color: #b03050; }
+body[data-stage="5"] .stage-label { background: #c0d8ff; color: #2050a0; }
+
+/* ── ボタン ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
+  border-radius: 22px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #6fa1ff, #4a7ec8);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(74,126,200,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+  pointer-events: auto;
+  font-family: inherit;
+}
+.btn:hover, .btn:active { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(74,126,200,0.45); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.pink { background: linear-gradient(135deg, #ffaad0, #e85a8c); box-shadow: 0 4px 10px rgba(232,90,140,0.35); }
+.btn.green { background: linear-gradient(135deg, #8be0a0, #40b860); box-shadow: 0 4px 10px rgba(64,184,96,0.35); }
+.btn.gold  { background: linear-gradient(135deg, #ffd870, #f5b820); color: #6a4400; box-shadow: 0 4px 10px rgba(245,184,32,0.4); }
+.btn.small { padding: 7px 16px; font-size: 13px; border-radius: 16px; }
+
+.nav-bottom {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 15;
+}
+
+/* ── SVG 原子表示の共通 ── */
+.atom-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.atom-svg {
+  display: block;
+}
+.atom-svg .shell-line {
+  fill: none;
+  stroke: #c8d4e8;
+  stroke-width: 1.4;
+  stroke-dasharray: 3 3;
+  opacity: 0.7;
+}
+.atom-svg .shell-K { stroke: #d895a8; }
+.atom-svg .shell-L { stroke: #95acd8; }
+.atom-svg .shell-M { stroke: #95c8a5; }
+.atom-svg .shell-N { stroke: #d8c878; }
+.atom-svg .shell-line.full {
+  stroke-width: 2.6;
+  stroke-dasharray: none;
+  stroke: var(--noble-gold);
+  filter: drop-shadow(0 0 4px rgba(245,184,32,0.6));
+}
+.atom-svg .nucleus {
+  fill: url(#grad-nucleus);
+  stroke: #c84030;
+  stroke-width: 1.5;
+}
+.atom-svg .nucleus-text {
+  font-size: 14px;
+  font-weight: bold;
+  fill: #fff;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.atom-svg .electron {
+  fill: url(#grad-electron);
+  stroke: #d89010;
+  stroke-width: 1;
+  transition: cx 0.5s, cy 0.5s, opacity 0.4s, fill 0.3s;
+}
+.atom-svg .electron[data-role="lose"] {
+  fill: var(--lose-color);
+  stroke: #b03050;
+  animation: wiggle 0.6s ease-in-out infinite;
+}
+.atom-svg .electron.flying {
+  transition: cx 0.7s ease-in, cy 0.7s ease-in, opacity 0.6s;
+  opacity: 0;
+}
+.atom-svg .slot {
+  fill: rgba(64,184,96,0.15);
+  stroke: var(--gain-color);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+  animation: slot-pulse 1s ease-in-out infinite;
+}
+@keyframes wiggle {
+  0%,100% { transform: translateX(0); }
+  25%     { transform: translateX(-2px); }
+  75%     { transform: translateX(2px); }
+}
+@keyframes slot-pulse {
+  0%,100% { opacity: 0.7; }
+  50%     { opacity: 1; }
+}
+.atom-svg .conf-text {
+  font-size: 13px;
+  font-weight: bold;
+  fill: #444;
+  text-anchor: middle;
+}
+
+.atom-label {
+  font-weight: bold;
+  font-size: 17px;
+  color: #333;
+  text-align: center;
+  margin-top: -2px;
+}
+.atom-label .sub { font-size: 11px; color: #888; font-weight: normal; }
+.atom-label .conf {
+  display: inline-block;
+  font-size: 13px;
+  color: #4a7ec8;
+  background: #f0f6ff;
+  padding: 1px 8px;
+  border-radius: 8px;
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+.atom-label .conf .match { color: var(--noble-gold); font-weight: bold; }
+
+/* ── Stage1 ── */
+#stage1 .center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+#stage1 .lead {
+  font-size: 15px;
+  color: #555;
+  background: rgba(255,255,255,0.92);
+  padding: 14px 18px;
+  border-radius: 14px;
+  margin-top: 14px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+  line-height: 1.7;
+  max-width: 320px;
+}
+
+/* ── Stage2 スライダー ── */
+#stage2 .slider-wrap {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 480px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+#stage2 .slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#stage2 input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 6px;
+  background: linear-gradient(90deg, #ffd6e0, #d6e8ff, #d8f3dc);
+  border-radius: 3px;
+  outline: none;
+}
+#stage2 input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #4a7ec8;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+#stage2 input[type="range"]::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #4a7ec8;
+  cursor: pointer;
+}
+#stage2 .slider-row .z-label {
+  font-weight: bold;
+  font-size: 14px;
+  color: #4a7ec8;
+  min-width: 38px;
+  text-align: center;
+  background: #f0f6ff;
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+#stage2 .judge-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+#stage2 .judge-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+#stage2 .judge-text {
+  font-size: 12px;
+  color: #555;
+  font-weight: bold;
+}
+#stage2 .judge-text.cation { color: var(--cation-accent); }
+#stage2 .judge-text.anion  { color: var(--anion-accent); }
+#stage2 .judge-text.noble  { color: #b08820; }
+#stage2 .judge-text.middle { color: #666; }
+#stage2 .kind-badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+#stage2 .kind-metal     { background: #ffe0e8; color: #b03050; }
+#stage2 .kind-nonmetal  { background: #e0e8ff; color: #2050a0; }
+#stage2 .kind-noble     { background: #fff2c8; color: #806000; }
+#stage2 .kind-mid       { background: #eee; color: #555; }
+
+#stage2 .atom-area {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#stage2 .shell-cap {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 11px;
+}
+#stage2 .shell-cap .cap {
+  background: #fff;
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: 1.5px solid #ddd;
+  font-weight: bold;
+}
+#stage2 .shell-cap .cap.K { border-color: #d895a8; color: #b03060; }
+#stage2 .shell-cap .cap.L { border-color: #95acd8; color: #2050a0; }
+#stage2 .shell-cap .cap.M { border-color: #95c8a5; color: #205a30; }
+#stage2 .shell-cap .cap.N { border-color: #d8c878; color: #806000; }
+#stage2 .shell-cap .cap.full {
+  background: var(--noble-gold);
+  color: #fff;
+  border-color: var(--noble-gold);
+  box-shadow: 0 0 6px rgba(245,184,32,0.6);
+}
+
+/* ── Stage3 クイズ ── */
+#stage3 .quiz-area {
+  position: absolute;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#stage3 .question {
+  font-size: 15px;
+  font-weight: bold;
+  color: #444;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+  text-align: center;
+}
+#stage3 .choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 380px;
+}
+#stage3 .choice {
+  background: #fff;
+  border: 3px solid #d6e0f0;
+  border-radius: 14px;
+  padding: 8px;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#stage3 .choice:hover { transform: translateY(-2px); border-color: #4a7ec8; }
+#stage3 .choice.correct { border-color: var(--noble-gold); background: #fff8e0; }
+#stage3 .choice.wrong { border-color: #ff8090; background: #ffe8ed; opacity: 0.8; }
+
+/* ── Stage4 / Stage5 共通: イオン化体験 ── */
+.ionize-area {
+  position: absolute;
+  top: 78px; bottom: 60px;
+  left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+}
+.ionize-area .speech {
+  background: rgba(255,255,255,0.96);
+  padding: 7px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #444;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+  max-width: 100%;
+  line-height: 1.5;
+}
+.ionize-area .speech .strong {
+  color: var(--cation-accent);
+  font-size: 15px;
+}
+body[data-stage="5"] .ionize-area .speech .strong { color: var(--anion-accent); }
+.ionize-area .counter {
+  font-size: 12px;
+  color: #666;
+  background: #fff;
+  padding: 4px 10px;
+  border-radius: 9px;
+  font-weight: bold;
+}
+.ionize-area .counter .num { font-size: 16px; color: var(--cation-accent); }
+body[data-stage="5"] .ionize-area .counter .num { color: var(--anion-accent); }
+.ionize-area .compare-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: center;
+}
+.cloud-target {
+  position: absolute;
+  top: 88px;
+  right: 12px;
+  width: 56px; height: 40px;
+  font-size: 32px;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.gain-electron {
+  position: absolute;
+  bottom: 90px;
+  right: 18px;
+  width: 28px; height: 28px;
+  font-size: 22px;
+  z-index: 5;
+  cursor: pointer;
+  animation: float-bob 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(245,184,32,0.5));
+}
+@keyframes float-bob {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-6px); }
+}
+.valence-badge {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 3px 12px;
+  border-radius: 14px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.valence-badge.plus  { background: #ffe0e8; color: var(--cation-accent); border: 2px solid var(--cation-accent); }
+.valence-badge.minus { background: #e0eaff; color: var(--anion-accent);  border: 2px solid var(--anion-accent); }
+.match-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #806000;
+  background: #fff8e0;
+  padding: 4px 10px;
+  border-radius: 9px;
+  border: 1.5px solid var(--noble-gold);
+}
+.subnav {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  z-index: 15;
+}
+.subdot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #ccd;
+}
+.subdot.done { background: var(--cation-accent); border-color: var(--cation-accent); }
+body[data-stage="5"] .subdot.done { background: var(--anion-accent); border-color: var(--anion-accent); }
+
+/* ── Stage4 補足カード Cu/Zn ── */
+.metal-extra {
+  position: absolute;
+  top: 78px; bottom: 60px;
+  left: 0; right: 0;
+  padding: 4px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.metal-extra .lead {
+  background: rgba(255,255,255,0.96);
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  color: #444;
+  text-align: center;
+  font-weight: bold;
+  line-height: 1.6;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+}
+.metal-extra .cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 380px;
+}
+.metal-extra .mcard {
+  background: #fff;
+  border: 3px solid #ffc0d0;
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(232,90,140,0.15);
+}
+.metal-extra .mcard .name { font-size: 16px; font-weight: bold; color: #333; }
+.metal-extra .mcard .formula {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--cation-accent);
+  margin: 4px 0;
+}
+.metal-extra .mcard .desc { font-size: 11px; color: #666; line-height: 1.5; }
+.metal-extra .summary {
+  background: #fff8ec;
+  padding: 8px 14px;
+  border-radius: 11px;
+  font-size: 12px;
+  color: #806000;
+  border-left: 4px solid var(--noble-gold);
+  line-height: 1.6;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* ── Stage6 価数を見つけよう ── */
+#stage6 .grid-area {
+  position: absolute;
+  top: 70px; bottom: 130px;
+  left: 0; right: 0;
+  padding: 4px 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+#stage6 .row-label {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 12px;
+  border-radius: 10px;
+  align-self: center;
+}
+#stage6 .row-label.cation { background: #ffe0e8; color: var(--cation-accent); }
+#stage6 .row-label.anion  { background: #e0eaff; color: var(--anion-accent); }
+#stage6 .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+}
+#stage6 .gcell {
+  background: #fff;
+  border-radius: 12px;
+  padding: 6px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  border: 2px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#stage6 .gcell.cation { border-color: #ffc0d0; }
+#stage6 .gcell.anion  { border-color: #c0d8ff; }
+#stage6 .gcell.solved.correct { border-color: var(--noble-gold); background: #fff8e0; }
+#stage6 .gcell .gname { font-size: 13px; font-weight: bold; color: #333; }
+#stage6 .gcell .gconf { font-size: 11px; color: #4a7ec8; background: #f0f6ff; padding: 1px 6px; border-radius: 6px; margin-top: 2px; }
+#stage6 .gcell .gbadge { margin-top: 4px; min-height: 28px; }
+#stage6 .gcell .gbadge.empty {
+  display: inline-block;
+  width: 56px; height: 26px;
+  border-radius: 13px;
+  border: 2px dashed #aaa;
+  background: #f8f8f8;
+}
+#stage6 .badges-bar {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: rgba(255,255,255,0.96);
+  padding: 8px 12px;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  max-width: 92%;
+}
+#stage6 .vbadge {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 11px;
+  cursor: pointer;
+  border: 2px solid;
+  transition: transform 0.1s;
+}
+#stage6 .vbadge.plus  { background: #fff; color: var(--cation-accent); border-color: var(--cation-accent); }
+#stage6 .vbadge.minus { background: #fff; color: var(--anion-accent); border-color: var(--anion-accent); }
+#stage6 .vbadge.selected { transform: scale(1.15); box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+#stage6 .vbadge.selected.plus  { background: var(--cation-accent); color: #fff; }
+#stage6 .vbadge.selected.minus { background: var(--anion-accent);  color: #fff; }
+
+/* ── Stage7 確認テスト ── */
+#stage7 .quiz-area {
+  position: absolute;
+  top: 78px;
+  bottom: 60px;
+  left: 0; right: 0;
+  padding: 4px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+#stage7 .qprogress {
+  font-size: 11px;
+  color: #888;
+  font-weight: bold;
+}
+#stage7 .question {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  background: #fff;
+  padding: 9px 14px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+  max-width: 100%;
+  line-height: 1.6;
+}
+#stage7 .choices {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  max-width: 360px;
+}
+#stage7 .choice {
+  background: #fff;
+  border: 3px solid #d6e0f0;
+  border-radius: 12px;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #444;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+#stage7 .choice:hover { border-color: #4a7ec8; transform: translateY(-1px); }
+#stage7 .choice.correct { border-color: var(--noble-gold); background: #fff8e0; color: #806000; }
+#stage7 .choice.wrong { border-color: #ff8090; background: #ffe8ed; opacity: 0.7; }
+#stage7 .feedback {
+  font-size: 12px;
+  color: #806000;
+  background: #fff8e0;
+  padding: 6px 12px;
+  border-radius: 10px;
+  border-left: 3px solid var(--noble-gold);
+  font-weight: bold;
+  text-align: center;
+  max-width: 100%;
+}
+
+/* ── Finale ── */
+#finale {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+#finale.active { display: flex; }
+#finale h2 {
+  font-size: 22px;
+  color: #4a7ec8;
+  margin-bottom: 14px;
+}
+#finale .summary {
+  background: rgba(255,255,255,0.96);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  max-width: 380px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #444;
+  text-align: left;
+  margin-bottom: 18px;
+}
+#finale .summary li { margin-bottom: 4px; list-style: none; padding-left: 22px; position: relative; }
+#finale .summary li::before {
+  content: '✨';
+  position: absolute;
+  left: 0;
+}
+
+/* ── キラキラ ── */
+.spark {
+  position: absolute;
+  font-size: 22px;
+  pointer-events: none;
+  animation: spark-fly 0.8s ease-out forwards;
+  z-index: 25;
+}
+@keyframes spark-fly {
+  0%   { transform: translate(0, 0) scale(0.3); opacity: 1; }
+  60%  { opacity: 1; }
+  100% { transform: translate(0, -50px) scale(1.4); opacity: 0; }
+}
+
+/* ── スクロールバー（Stage6グリッド用） ── */
+#stage6 .grid-area::-webkit-scrollbar { width: 4px; }
+#stage6 .grid-area::-webkit-scrollbar-thumb { background: #ccd; border-radius: 2px; }
+</style>
+</head>
+<body data-stage="1">
+<div id="app">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <div class="title">⚛️🏠 電子のおうち</div>
+    <div class="stage-indicator">
+      <div class="dot active" data-stage="1"></div>
+      <div class="dot" data-stage="2"></div>
+      <div class="dot" data-stage="3"></div>
+      <div class="dot" data-stage="4"></div>
+      <div class="dot" data-stage="5"></div>
+      <div class="dot" data-stage="6"></div>
+      <div class="dot" data-stage="7"></div>
+    </div>
+  </div>
+
+  <!-- SVG defs (各SVGで参照) -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <radialGradient id="grad-nucleus" cx="30%" cy="30%">
+        <stop offset="0%" stop-color="#ffd0c0"/>
+        <stop offset="100%" stop-color="#c84030"/>
+      </radialGradient>
+      <radialGradient id="grad-electron" cx="30%" cy="30%">
+        <stop offset="0%" stop-color="#fff5a0"/>
+        <stop offset="100%" stop-color="#f5b820"/>
+      </radialGradient>
+      <radialGradient id="grad-nucleus-cation" cx="30%" cy="30%">
+        <stop offset="0%" stop-color="#ffc0d0"/>
+        <stop offset="100%" stop-color="#e85a8c"/>
+      </radialGradient>
+      <radialGradient id="grad-nucleus-anion" cx="30%" cy="30%">
+        <stop offset="0%" stop-color="#b0d0ff"/>
+        <stop offset="100%" stop-color="#4a7ec8"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- Stage 1: イントロ -->
+  <div id="stage1" class="stage active">
+    <div class="message">
+      <span class="stage-label">1 / 7</span>
+      電子のおうちへようこそ
+      <div class="sub">原子は「原子核」と「電子」でできているよ</div>
+    </div>
+    <div class="center">
+      <div id="stage1-svg-wrap"></div>
+      <div class="lead">
+        電子は原子核のまわりを<br>
+        「<b>電子殻</b>」という<b>おうち</b>に住んでいるよ。<br>
+        電子は <span style="color:#d895a8;font-weight:bold">内側のおうち（K殻）</span>から順に入っていくよ。
+      </div>
+    </div>
+    <div class="nav-bottom">
+      <button class="btn" onclick="setStage(2)">スタート →</button>
+    </div>
+  </div>
+
+  <!-- Stage 2: 電子をならべる -->
+  <div id="stage2" class="stage">
+    <div class="message">
+      <span class="stage-label">2 / 7</span>
+      電子をならべてみよう
+      <div class="sub">スライダーを動かすと電子が入っていくよ</div>
+    </div>
+    <div class="atom-area">
+      <div id="stage2-svg-wrap"></div>
+      <div class="atom-label">
+        <span id="s2-name">水素</span> <span id="s2-sym" style="color:#4a7ec8">H</span>
+        <span id="s2-kind" class="kind-badge kind-nonmetal" style="margin-left:4px">非金属</span>
+        <div><span id="s2-conf" class="conf">(1)</span></div>
+      </div>
+      <div class="shell-cap" id="s2-caps"></div>
+    </div>
+    <div class="slider-wrap">
+      <div class="slider-row">
+        <span class="z-label" id="s2-z">1</span>
+        <input type="range" id="s2-slider" min="1" max="18" value="1">
+        <span class="z-label" id="s2-z-max" style="background:#fff8e0;color:#806000">18</span>
+      </div>
+      <div class="judge-row">
+        <span class="judge-icon" id="s2-judge-icon">😌</span>
+        <span class="judge-text" id="s2-judge-text">これからスタート</span>
+      </div>
+    </div>
+    <div class="nav-bottom">
+      <button class="btn small" onclick="setStage(1)">← 戻る</button>
+      <button class="btn" onclick="setStage(3)">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Stage 3: 18族の安定性 -->
+  <div id="stage3" class="stage">
+    <div class="message">
+      <span class="stage-label">3 / 7</span>
+      18族のおうちは<b style="color:#f5b820">ピッタリ満タン</b>
+      <div class="sub">どれが「最も安定」な電子配置かな？</div>
+    </div>
+    <div class="quiz-area">
+      <div class="question" id="s3-q">最も安定な（おうちがピッタリ満タンな）電子配置はどれ？</div>
+      <div class="choices" id="s3-choices"></div>
+      <div id="s3-feedback" style="margin-top:10px;font-size:12px;color:#806000;font-weight:bold;text-align:center"></div>
+    </div>
+    <div class="nav-bottom">
+      <button class="btn small" onclick="setStage(2)">← 戻る</button>
+      <button class="btn" id="s3-next" onclick="setStage(4)" disabled>次へ →</button>
+    </div>
+  </div>
+
+  <!-- Stage 4: 陽イオンになる原子たち -->
+  <div id="stage4" class="stage">
+    <div class="message">
+      <span class="stage-label">4 / 7</span>
+      <span style="color:var(--cation-accent)">金属</span>は電子を<b>失って</b>陽イオンに
+      <div class="sub">最外殻の<b style="color:var(--lose-color)">赤い電子</b>をタップして雲☁️へ</div>
+    </div>
+    <div class="cloud-target">☁️</div>
+    <div class="ionize-area" id="s4-area">
+      <div class="speech" id="s4-speech"></div>
+      <div id="s4-svg-wrap"></div>
+      <div class="atom-label">
+        <span id="s4-symbol" style="font-size:18px;color:var(--cation-accent)">Na</span>
+        <span id="s4-badge"></span>
+        <div><span id="s4-conf" class="conf">(2, 8, 1)</span></div>
+      </div>
+      <div class="counter">電子を捨てた数: <span class="num" id="s4-count">0</span> 個</div>
+      <div class="compare-row" id="s4-compare" style="display:none"></div>
+    </div>
+    <div class="subnav" id="s4-subnav"></div>
+    <div class="nav-bottom" style="bottom:42px">
+      <button class="btn small" onclick="setStage(3)">← 戻る</button>
+      <button class="btn pink" id="s4-next" disabled onclick="goStage4Extra()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Stage 4-extra: 金属イオンの仲間（Cu, Zn） -->
+  <div id="stage4-extra" class="stage">
+    <div class="message">
+      <span class="stage-label">4 / 7</span>
+      <span style="color:var(--cation-accent)">金属イオンの仲間</span>たち
+      <div class="sub">電子配置は少し複雑だけど、結局2個失って＋2価</div>
+    </div>
+    <div class="metal-extra">
+      <div class="lead">
+        <b style="color:var(--cation-accent)">銅 Cu</b> や <b style="color:var(--cation-accent)">亜鉛 Zn</b> は<br>
+        電子配置がもう少し複雑だけど、<br>
+        やっぱり<b>電子を失って陽イオン</b>になるんだ
+      </div>
+      <div class="cards">
+        <div class="mcard">
+          <div class="name">銅 (Cu)</div>
+          <div class="formula">Cu²⁺</div>
+          <div class="desc">電子を<b>2個</b>失う<br>→ <b>+2価</b>のイオン<br>(電池や塩化銅で出るよ)</div>
+        </div>
+        <div class="mcard">
+          <div class="name">亜鉛 (Zn)</div>
+          <div class="formula">Zn²⁺</div>
+          <div class="desc">電子を<b>2個</b>失う<br>→ <b>+2価</b>のイオン<br>(電池の負極で出るよ)</div>
+        </div>
+      </div>
+      <div class="summary">
+        💡 <b>金属</b>は電子を<b>失って</b>陽イオン（＋）になる仲間
+      </div>
+    </div>
+    <div class="nav-bottom" style="bottom:18px">
+      <button class="btn small" onclick="setStage(4)">← 戻る</button>
+      <button class="btn pink" onclick="setStage(5)">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Stage 5: 陰イオンになる原子たち -->
+  <div id="stage5" class="stage">
+    <div class="message">
+      <span class="stage-label">5 / 7</span>
+      <span style="color:var(--anion-accent)">非金属</span>は電子を<b>もらって</b>陰イオンに
+      <div class="sub">空きスロット🟢に <b>もらい電子</b>✨ をタップ</div>
+    </div>
+    <div class="gain-electron" id="s5-gain-e" onclick="onGainElectron()">✨</div>
+    <div class="ionize-area" id="s5-area">
+      <div class="speech" id="s5-speech"></div>
+      <div id="s5-svg-wrap"></div>
+      <div class="atom-label">
+        <span id="s5-symbol" style="font-size:18px;color:var(--anion-accent)">Cl</span>
+        <span id="s5-badge"></span>
+        <div><span id="s5-conf" class="conf">(2, 8, 7)</span></div>
+      </div>
+      <div class="counter">電子をもらった数: <span class="num" id="s5-count">0</span> 個</div>
+      <div class="compare-row" id="s5-compare" style="display:none"></div>
+    </div>
+    <div class="subnav" id="s5-subnav"></div>
+    <div class="nav-bottom" style="bottom:42px">
+      <button class="btn small" onclick="setStage(4)">← 戻る</button>
+      <button class="btn" id="s5-next" disabled onclick="setStage(6)">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Stage 6: 価数を見つけよう -->
+  <div id="stage6" class="stage">
+    <div class="message">
+      <span class="stage-label">6 / 7</span>
+      価数を見つけよう
+      <div class="sub">バッジをタップ→原子をタップで決定</div>
+    </div>
+    <div class="grid-area">
+      <div class="row-label cation">⬇️ 金属（陽イオン）</div>
+      <div class="grid" id="s6-cation-grid"></div>
+      <div class="row-label anion">⬇️ 非金属（陰イオン）</div>
+      <div class="grid" id="s6-anion-grid"></div>
+    </div>
+    <div class="badges-bar" id="s6-badges"></div>
+    <div class="nav-bottom" style="bottom:8px">
+      <button class="btn small" onclick="setStage(5)">← 戻る</button>
+      <button class="btn" id="s6-next" disabled onclick="setStage(7)">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Stage 7: 確認テスト -->
+  <div id="stage7" class="stage">
+    <div class="message">
+      <span class="stage-label">7 / 7</span>
+      確認テスト
+      <div class="sub" id="s7-progress">第 1 問 / 5 問</div>
+    </div>
+    <div class="quiz-area">
+      <div class="question" id="s7-q"></div>
+      <div class="choices" id="s7-choices"></div>
+      <div class="feedback" id="s7-feedback" style="display:none"></div>
+    </div>
+    <div class="nav-bottom" style="bottom:8px">
+      <button class="btn small" onclick="setStage(6)">← 戻る</button>
+      <button class="btn gold" id="s7-next" disabled>次へ →</button>
+    </div>
+  </div>
+
+  <!-- Finale -->
+  <div id="finale">
+    <h2>🎉 修了！</h2>
+    <div class="summary">
+      <li>電子は内側のおうち（K殻）から順に入る</li>
+      <li>K殻=2個、L殻=8個、M殻=8個 で「ピッタリ満タン」</li>
+      <li>18族（He・Ne・Ar）は最初から満タンで安定</li>
+      <li><b style="color:#e85a8c">金属</b>は電子を<b>失って</b>陽イオン（Na⁺・Mg²⁺・K⁺・Ca²⁺・Cu²⁺・Zn²⁺）</li>
+      <li><b style="color:#4a7ec8">非金属</b>は電子を<b>もらって</b>陰イオン（Cl⁻・O²⁻・S²⁻）</li>
+      <li>失う／もらう電子の数 = ＋／−の<b>価数</b></li>
+    </div>
+    <button class="btn gold" onclick="restart()">もういちど</button>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// データ定義
+// ============================================================
+const ATOMS = [
+  {z:1,  sym:'H',  ja:'水素',         conf:[1],       group:1,  kind:'nonmetal'},
+  {z:2,  sym:'He', ja:'ヘリウム',     conf:[2],       group:18, kind:'noble', isNoble:true},
+  {z:3,  sym:'Li', ja:'リチウム',     conf:[2,1],     group:1,  kind:'metal'},
+  {z:4,  sym:'Be', ja:'ベリリウム',   conf:[2,2],     group:2,  kind:'metal'},
+  {z:5,  sym:'B',  ja:'ホウ素',       conf:[2,3],     group:13, kind:'mid'},
+  {z:6,  sym:'C',  ja:'炭素',         conf:[2,4],     group:14, kind:'nonmetal'},
+  {z:7,  sym:'N',  ja:'窒素',         conf:[2,5],     group:15, kind:'nonmetal'},
+  {z:8,  sym:'O',  ja:'酸素',         conf:[2,6],     group:16, kind:'nonmetal',
+        ionizesTo:{gain:2, becomes:'O²⁻',  newConf:[2,8],   sameAs:'Ne', valence:-2}},
+  {z:9,  sym:'F',  ja:'フッ素',       conf:[2,7],     group:17, kind:'nonmetal'},
+  {z:10, sym:'Ne', ja:'ネオン',       conf:[2,8],     group:18, kind:'noble', isNoble:true},
+  {z:11, sym:'Na', ja:'ナトリウム',   conf:[2,8,1],   group:1,  kind:'metal',
+        ionizesTo:{lose:1, becomes:'Na⁺',  newConf:[2,8],   sameAs:'Ne', valence:1}},
+  {z:12, sym:'Mg', ja:'マグネシウム', conf:[2,8,2],   group:2,  kind:'metal',
+        ionizesTo:{lose:2, becomes:'Mg²⁺', newConf:[2,8],   sameAs:'Ne', valence:2}},
+  {z:13, sym:'Al', ja:'アルミニウム', conf:[2,8,3],   group:13, kind:'metal'},
+  {z:14, sym:'Si', ja:'ケイ素',       conf:[2,8,4],   group:14, kind:'mid'},
+  {z:15, sym:'P',  ja:'リン',         conf:[2,8,5],   group:15, kind:'nonmetal'},
+  {z:16, sym:'S',  ja:'硫黄',         conf:[2,8,6],   group:16, kind:'nonmetal',
+        ionizesTo:{gain:2, becomes:'S²⁻',  newConf:[2,8,8], sameAs:'Ar', valence:-2}},
+  {z:17, sym:'Cl', ja:'塩素',         conf:[2,8,7],   group:17, kind:'nonmetal',
+        ionizesTo:{gain:1, becomes:'Cl⁻',  newConf:[2,8,8], sameAs:'Ar', valence:-1}},
+  {z:18, sym:'Ar', ja:'アルゴン',     conf:[2,8,8],   group:18, kind:'noble', isNoble:true},
+  {z:19, sym:'K',  ja:'カリウム',     conf:[2,8,8,1], group:1,  kind:'metal',
+        ionizesTo:{lose:1, becomes:'K⁺',   newConf:[2,8,8], sameAs:'Ar', valence:1}},
+  {z:20, sym:'Ca', ja:'カルシウム',   conf:[2,8,8,2], group:2,  kind:'metal',
+        ionizesTo:{lose:2, becomes:'Ca²⁺', newConf:[2,8,8], sameAs:'Ar', valence:2}},
+];
+const SHELL_NAME = ['K殻','L殻','M殻','N殻'];
+const KIND_LABEL = {metal:'金属', nonmetal:'非金属', noble:'希ガス', mid:'中間'};
+const KIND_CLASS = {metal:'kind-metal', nonmetal:'kind-nonmetal', noble:'kind-noble', mid:'kind-mid'};
+
+const atomByZ = z => ATOMS.find(a => a.z === z);
+const atomBySym = s => ATOMS.find(a => a.sym === s);
+
+// SVG レイアウト（殻の半径）
+const SHELL_RADII = [38, 70, 105, 138];
+const NUCLEUS_R = 22;
+const SVG_SIZE_BIG = 320;   // メイン用（4殻まで描ける）
+const SVG_SIZE_MID = 200;   // 比較・並列用
+const SVG_SIZE_SMALL = 130; // Stage6グリッド用
+
+// ============================================================
+// 効果音 (AudioContext)
+// ============================================================
+let audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+function beep(freq, dur=0.1, type='sine', vol=0.1) {
+  if (!audioCtx) return;
+  try {
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.frequency.value = freq; o.type = type;
+    g.gain.value = vol;
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch(e){}
+}
+function sfxClick()   { beep(700, 0.05); }
+function sfxPop()     { beep(900, 0.08); setTimeout(()=>beep(600,0.06),60); }
+function sfxSuccess() { beep(1000,0.08); setTimeout(()=>beep(1400,0.08),60); setTimeout(()=>beep(1800,0.12),120); }
+function sfxReject()  { beep(220, 0.18, 'sawtooth', 0.08); }
+function sfxNoble()   { beep(1200,0.1); setTimeout(()=>beep(1500,0.1),80); setTimeout(()=>beep(1800,0.14),160); setTimeout(()=>beep(2200,0.16),250); }
+
+// ============================================================
+// SVG 描画
+// ============================================================
+function placeElectrons(conf, cx, cy, radii) {
+  const out = [];
+  for (let s = 0; s < conf.length; s++) {
+    const n = conf[s];
+    const r = radii[s];
+    for (let i = 0; i < n; i++) {
+      const ang = -Math.PI/2 + (Math.PI*2/n) * i;
+      out.push({
+        shell: s,
+        idx: i,
+        x: cx + r * Math.cos(ang),
+        y: cy + r * Math.sin(ang),
+      });
+    }
+  }
+  return out;
+}
+
+function confToString(conf) {
+  return '(' + conf.join(', ') + ')';
+}
+
+function svgEl(tag, attrs={}) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+/**
+ * 原子を SVG で描画
+ * opts: { size, role, electronRoles, slots, nucleusVariant, hideShellsBeyond, fullShells }
+ *   role: 'normal' | 'cation-target' | 'anion-target'
+ *   electronRoles: 各電子のロール {shellIdx, idx → 'normal'|'lose'|'gain-temp'}（配列インデックスで指定）
+ *   slots: 空きスロット位置の配列 [{shell, x, y}]
+ *   fullShells: 金色マッチ表示する殻インデックスの配列
+ */
+function renderAtom(atom, opts={}) {
+  const size = opts.size || SVG_SIZE_BIG;
+  const cx = size/2, cy = size/2;
+  const scale = size / SVG_SIZE_BIG;
+  const radii = SHELL_RADII.map(r => r * scale);
+  const nucR = NUCLEUS_R * scale;
+  const eR = 7 * scale;
+
+  const svg = svgEl('svg', {
+    viewBox: `0 0 ${size} ${size}`,
+    width: size,
+    height: size,
+    class: 'atom-svg'
+  });
+
+  // 殻線（描画する殻数を決定）
+  const shellCount = atom.conf.length;
+  for (let s = 0; s < shellCount; s++) {
+    const cls = ['shell-line', 'shell-' + ['K','L','M','N'][s]];
+    if (opts.fullShells && opts.fullShells.includes(s)) cls.push('full');
+    svg.appendChild(svgEl('circle', {
+      cx, cy, r: radii[s],
+      class: cls.join(' ')
+    }));
+  }
+
+  // 原子核
+  let nucGrad = 'grad-nucleus';
+  if (opts.nucleusVariant === 'cation') nucGrad = 'grad-nucleus-cation';
+  if (opts.nucleusVariant === 'anion')  nucGrad = 'grad-nucleus-anion';
+  svg.appendChild(svgEl('circle', {
+    cx, cy, r: nucR,
+    class: 'nucleus',
+    fill: `url(#${nucGrad})`
+  }));
+  // 元素記号
+  const symText = svgEl('text', {
+    x: cx, y: cy - 2,
+    class: 'nucleus-text',
+    'font-size': 13 * scale
+  });
+  symText.textContent = opts.symbolOverride || atom.sym;
+  svg.appendChild(symText);
+  // 原子番号
+  const zText = svgEl('text', {
+    x: cx, y: cy + 9 * scale,
+    class: 'nucleus-text',
+    'font-size': 9 * scale,
+    opacity: 0.85
+  });
+  zText.textContent = atom.z;
+  svg.appendChild(zText);
+
+  // 空きスロット（陰イオン体験用）
+  if (opts.slots) {
+    for (const sl of opts.slots) {
+      svg.appendChild(svgEl('circle', {
+        cx: sl.x * scale, cy: sl.y * scale,
+        r: eR,
+        class: 'slot',
+        'data-slot-shell': sl.shell,
+        'data-slot-idx': sl.slotIdx
+      }));
+    }
+  }
+
+  // 電子
+  const positions = placeElectrons(atom.conf, cx, cy, radii);
+  positions.forEach((p, i) => {
+    const role = opts.electronRoles ? opts.electronRoles[i] : 'normal';
+    const e = svgEl('circle', {
+      cx: p.x, cy: p.y, r: eR,
+      class: 'electron',
+      'data-shell': p.shell,
+      'data-idx': p.idx,
+      'data-role': role || 'normal'
+    });
+    if (role === 'lose') {
+      e.style.cursor = 'pointer';
+    }
+    svg.appendChild(e);
+  });
+
+  return svg;
+}
+
+// ============================================================
+// ステージ管理
+// ============================================================
+const stages = {
+  1: document.getElementById('stage1'),
+  2: document.getElementById('stage2'),
+  3: document.getElementById('stage3'),
+  4: document.getElementById('stage4'),
+  '4-extra': document.getElementById('stage4-extra'),
+  5: document.getElementById('stage5'),
+  6: document.getElementById('stage6'),
+  7: document.getElementById('stage7'),
+};
+const dots = document.querySelectorAll('.dot');
+const finaleEl = document.getElementById('finale');
+let currentStage = 1;
+
+function setStage(n) {
+  ensureAudio();
+  sfxClick();
+  Object.values(stages).forEach(s => s.classList.remove('active'));
+  finaleEl.classList.remove('active');
+  if (stages[n]) stages[n].classList.add('active');
+  // ドット更新（4-extraは4扱い）
+  const stageNum = (n === '4-extra') ? 4 : (typeof n === 'number' ? n : parseInt(n));
+  dots.forEach(d => {
+    d.classList.toggle('active', parseInt(d.dataset.stage) <= stageNum);
+  });
+  document.body.dataset.stage = stageNum;
+  currentStage = n;
+  if (n === 1) initStage1();
+  if (n === 2) initStage2();
+  if (n === 3) initStage3();
+  if (n === 4) initStage4();
+  if (n === 5) initStage5();
+  if (n === 6) initStage6();
+  if (n === 7) initStage7();
+}
+
+function goStage4Extra() {
+  ensureAudio();
+  sfxClick();
+  Object.values(stages).forEach(s => s.classList.remove('active'));
+  stages['4-extra'].classList.add('active');
+  document.body.dataset.stage = 4;
+  currentStage = '4-extra';
+}
+
+function showFinale() {
+  ensureAudio();
+  Object.values(stages).forEach(s => s.classList.remove('active'));
+  finaleEl.classList.add('active');
+  dots.forEach(d => d.classList.add('active'));
+  sfxNoble();
+}
+
+// ============================================================
+// Stage 1: イントロ
+// ============================================================
+function initStage1() {
+  const wrap = document.getElementById('stage1-svg-wrap');
+  wrap.innerHTML = '';
+  const h = atomByZ(1);
+  wrap.appendChild(renderAtom(h, {size: SVG_SIZE_BIG}));
+}
+
+// ============================================================
+// Stage 2: 電子をならべる
+// ============================================================
+function initStage2() {
+  const slider = document.getElementById('s2-slider');
+  slider.value = 1;
+  updateStage2(1);
+  if (!slider._bound) {
+    slider.addEventListener('input', e => {
+      ensureAudio();
+      updateStage2(parseInt(e.target.value));
+    });
+    slider._bound = true;
+  }
+}
+
+function updateStage2(z) {
+  const atom = atomByZ(z);
+  document.getElementById('s2-z').textContent = z;
+  document.getElementById('s2-name').textContent = atom.ja;
+  document.getElementById('s2-sym').textContent = atom.sym;
+  document.getElementById('s2-conf').textContent = confToString(atom.conf);
+
+  const kindEl = document.getElementById('s2-kind');
+  kindEl.textContent = KIND_LABEL[atom.kind];
+  kindEl.className = 'kind-badge ' + KIND_CLASS[atom.kind];
+
+  // SVG描画 (18番までは3殻、それ以上は4殻)
+  const wrap = document.getElementById('stage2-svg-wrap');
+  wrap.innerHTML = '';
+  const fullShells = [];
+  if (atom.isNoble) {
+    // 希ガスは全殻が満タン
+    for (let i = 0; i < atom.conf.length; i++) fullShells.push(i);
+  }
+  wrap.appendChild(renderAtom(atom, {size: 230, fullShells}));
+
+  // 殻キャパゲージ
+  const caps = document.getElementById('s2-caps');
+  caps.innerHTML = '';
+  const capacities = [2, 8, 8, 8];
+  for (let s = 0; s < atom.conf.length; s++) {
+    const n = atom.conf[s];
+    const cap = capacities[s];
+    const div = document.createElement('div');
+    div.className = 'cap ' + ['K','L','M','N'][s];
+    if (n === cap) div.classList.add('full');
+    div.textContent = `${['K','L','M','N'][s]}殻 ${n}/${cap}`;
+    caps.appendChild(div);
+  }
+
+  // 判別アイコン (最外殻電子数で判定)
+  const outer = atom.conf[atom.conf.length - 1];
+  const isOnlyShell = atom.conf.length === 1;
+  const iconEl = document.getElementById('s2-judge-icon');
+  const textEl = document.getElementById('s2-judge-text');
+  textEl.className = 'judge-text';
+  if (atom.isNoble) {
+    iconEl.textContent = '😌';
+    textEl.textContent = 'もう満足！(希ガス＝安定)';
+    textEl.classList.add('noble');
+  } else if (isOnlyShell && outer === 1) {
+    // 1H は特殊
+    iconEl.textContent = '💨';
+    textEl.textContent = '失う方が楽（陽イオン予告）';
+    textEl.classList.add('cation');
+  } else if (outer >= 1 && outer <= 3) {
+    iconEl.textContent = '💨';
+    textEl.textContent = '失う方が楽（陽イオン予告）';
+    textEl.classList.add('cation');
+  } else if (outer >= 5 && outer <= 7) {
+    iconEl.textContent = '✨';
+    textEl.textContent = 'もらう方が楽（陰イオン予告）';
+    textEl.classList.add('anion');
+  } else if (outer === 4) {
+    iconEl.textContent = '🤔';
+    textEl.textContent = 'どちらでもない (中3範囲外)';
+    textEl.classList.add('middle');
+  }
+}
+
+// ============================================================
+// Stage 3: 18族の安定性クイズ
+// ============================================================
+function initStage3() {
+  const choicesEl = document.getElementById('s3-choices');
+  choicesEl.innerHTML = '';
+  document.getElementById('s3-feedback').textContent = '';
+  document.getElementById('s3-next').disabled = true;
+
+  // 候補: He(2), Ne(2,8), Ar(2,8,8), Na(2,8,1) を並べて、3つの希ガスから「最も外側まで満タン」を聞く...
+  // → シンプルに4択で「最も安定なのは？」
+  const candidates = [
+    atomBySym('Na'),  // 不安定
+    atomBySym('Ne'),  // 安定（正解候補）
+    atomBySym('Cl'),  // 不安定
+    atomBySym('Ar'),  // 安定（正解候補）
+  ];
+  // 正解はNeとAr両方だが、「最も安定」というよりは「希ガス＝安定」を学ばせるため、
+  // ここでは Ne と Ar のどちらも正解扱い、Na/Cl を不正解とする
+  // → 簡略化のため「希ガスはどれ？」に絞る
+  document.getElementById('s3-q').textContent = '「ピッタリ満タン」で安定なのはどれ？(希ガスを選ぼう)';
+
+  let answered = 0;
+  const correctSet = new Set(['Ne', 'Ar']);
+
+  candidates.forEach(atom => {
+    const card = document.createElement('div');
+    card.className = 'choice';
+    card.appendChild(renderAtom(atom, {size: SVG_SIZE_SMALL}));
+    const label = document.createElement('div');
+    label.style.fontSize = '12px';
+    label.style.fontWeight = 'bold';
+    label.style.marginTop = '4px';
+    label.innerHTML = `${atom.sym} <span style="color:#888;font-weight:normal">${confToString(atom.conf)}</span>`;
+    card.appendChild(label);
+    card.addEventListener('click', () => {
+      ensureAudio();
+      if (card.classList.contains('correct') || card.classList.contains('wrong')) return;
+      if (correctSet.has(atom.sym)) {
+        card.classList.add('correct');
+        sfxSuccess();
+        answered++;
+        document.getElementById('s3-feedback').textContent = `✨ ${atom.ja}は希ガス！${confToString(atom.conf)} ピッタリ満タンで安定`;
+        if (answered >= 2) {
+          document.getElementById('s3-next').disabled = false;
+          document.getElementById('s3-feedback').textContent = '✨ 2つとも正解！希ガス（18族）はみんな安定';
+        }
+      } else {
+        card.classList.add('wrong');
+        sfxReject();
+        document.getElementById('s3-feedback').textContent = `${atom.sym}${confToString(atom.conf)}は最外殻が満タンじゃないよ`;
+      }
+    });
+    choicesEl.appendChild(card);
+  });
+}
+
+// ============================================================
+// Stage 4: 陽イオンになる原子たち（Na→Mg→K→Ca）
+// ============================================================
+const STAGE4_ATOMS = ['Na', 'Mg', 'K', 'Ca'];
+let s4Index = 0;
+let s4State = null;  // {atom, lostCount, completed}
+
+function initStage4() {
+  s4Index = 0;
+  startStage4Sub(0);
+  document.getElementById('s4-next').disabled = true;
+  renderS4Subnav();
+}
+
+function renderS4Subnav() {
+  const nav = document.getElementById('s4-subnav');
+  nav.innerHTML = '';
+  STAGE4_ATOMS.forEach((sym, i) => {
+    const d = document.createElement('div');
+    d.className = 'subdot';
+    if (i < s4Index) d.classList.add('done');
+    if (i === s4Index && s4State && s4State.completed) d.classList.add('done');
+    nav.appendChild(d);
+    if (i < STAGE4_ATOMS.length - 1) {
+      const arr = document.createElement('span');
+      arr.style.fontSize = '11px';
+      arr.style.color = '#aaa';
+      arr.textContent = '→';
+      nav.appendChild(arr);
+    }
+  });
+}
+
+function startStage4Sub(i) {
+  const atom = atomBySym(STAGE4_ATOMS[i]);
+  s4State = { atom, lostCount: 0, completed: false };
+
+  const speech = document.getElementById('s4-speech');
+  const loseN = atom.ionizesTo.lose;
+  speech.innerHTML = `<b>${atom.ja} ${atom.sym}</b> は最外殻に電子が <span class="strong">${atom.conf[atom.conf.length-1]}個</span><br>` +
+                    `<b style="color:var(--lose-color)">${loseN}個</b>失えば、すぐ内側の殻が「ピッタリ満タン」（${atom.ionizesTo.sameAs}と同じ）になるよ`;
+
+  document.getElementById('s4-symbol').textContent = atom.sym;
+  document.getElementById('s4-symbol').style.color = 'var(--cation-accent)';
+  document.getElementById('s4-badge').innerHTML = '';
+  document.getElementById('s4-conf').textContent = confToString(atom.conf);
+  document.getElementById('s4-conf').classList.remove('match');
+  document.getElementById('s4-count').textContent = '0';
+  document.getElementById('s4-compare').style.display = 'none';
+  document.getElementById('s4-compare').innerHTML = '';
+
+  const wrap = document.getElementById('s4-svg-wrap');
+  wrap.innerHTML = '';
+  // 最外殻の電子を 'lose' ロールに
+  const electronRoles = [];
+  let idx = 0;
+  for (let s = 0; s < atom.conf.length; s++) {
+    for (let e = 0; e < atom.conf[s]; e++) {
+      if (s === atom.conf.length - 1) electronRoles.push('lose');
+      else electronRoles.push('normal');
+      idx++;
+    }
+  }
+  const svg = renderAtom(atom, {
+    size: SVG_SIZE_BIG,
+    nucleusVariant: 'cation',
+    electronRoles
+  });
+  // クリックで電子を放出
+  svg.querySelectorAll('.electron[data-role="lose"]').forEach(e => {
+    e.addEventListener('click', () => onLoseElectron(e));
+  });
+  wrap.appendChild(svg);
+  renderS4Subnav();
+}
+
+function onLoseElectron(electronEl) {
+  if (!s4State || s4State.completed) return;
+  ensureAudio();
+  if (electronEl.classList.contains('flying')) return;
+  electronEl.classList.add('flying');
+  // 雲位置 (右上)。SVG座標系で右上に飛ばす
+  const targetX = SVG_SIZE_BIG + 30;
+  const targetY = -30;
+  electronEl.setAttribute('cx', targetX);
+  electronEl.setAttribute('cy', targetY);
+  sfxPop();
+  s4State.lostCount++;
+  document.getElementById('s4-count').textContent = s4State.lostCount;
+
+  const need = s4State.atom.ionizesTo.lose;
+  if (s4State.lostCount >= need) {
+    setTimeout(() => completeStage4Sub(), 700);
+  }
+}
+
+function completeStage4Sub() {
+  if (!s4State) return;
+  s4State.completed = true;
+  const atom = s4State.atom;
+  const it = atom.ionizesTo;
+
+  // ラベル変化
+  document.getElementById('s4-symbol').textContent = it.becomes;
+  document.getElementById('s4-badge').innerHTML = `<span class="valence-badge plus">+${it.valence}</span>`;
+  // 数値表記変化
+  const newConfStr = confToString(it.newConf);
+  const noble = atomBySym(it.sameAs);
+  document.getElementById('s4-conf').innerHTML = newConfStr + ' <span class="match">←' + it.sameAs + 'と同じ</span>';
+  document.getElementById('s4-conf').classList.add('match');
+
+  // 比較表示（希ガスを並べる）
+  const cmp = document.getElementById('s4-compare');
+  cmp.style.display = 'flex';
+  cmp.innerHTML = '';
+  // ↑のイオン
+  const ionAtomVirtual = {z: atom.z, sym: it.becomes, conf: it.newConf, isNoble:false};
+  const fullShells = ionAtomVirtual.conf.map((_,i) => i);
+  const leftCard = document.createElement('div');
+  leftCard.className = 'atom-card';
+  leftCard.appendChild(renderAtom(ionAtomVirtual, {
+    size: SVG_SIZE_MID,
+    nucleusVariant: 'cation',
+    fullShells,
+    symbolOverride: it.becomes
+  }));
+  const lLabel = document.createElement('div');
+  lLabel.style.fontSize='12px';
+  lLabel.style.fontWeight='bold';
+  lLabel.innerHTML = `<span style="color:var(--cation-accent)">${it.becomes}</span> ${newConfStr}`;
+  leftCard.appendChild(lLabel);
+
+  const rightCard = document.createElement('div');
+  rightCard.className = 'atom-card';
+  rightCard.appendChild(renderAtom(noble, {
+    size: SVG_SIZE_MID,
+    fullShells: noble.conf.map((_,i)=>i)
+  }));
+  const rLabel = document.createElement('div');
+  rLabel.style.fontSize='12px';
+  rLabel.style.fontWeight='bold';
+  rLabel.innerHTML = `${noble.sym} ${confToString(noble.conf)}`;
+  rightCard.appendChild(rLabel);
+
+  const eq = document.createElement('div');
+  eq.style.fontSize = '24px';
+  eq.style.color = 'var(--noble-gold)';
+  eq.style.fontWeight = 'bold';
+  eq.style.alignSelf = 'center';
+  eq.textContent = '=';
+
+  cmp.appendChild(leftCard);
+  cmp.appendChild(eq);
+  cmp.appendChild(rightCard);
+
+  sfxNoble();
+  sparkAt(svgCenterToPage('s4-svg-wrap'), '✨');
+
+  renderS4Subnav();
+
+  // 次のサブステップへ自動遷移 or 完了ボタン有効化
+  setTimeout(() => {
+    if (s4Index < STAGE4_ATOMS.length - 1) {
+      s4Index++;
+      startStage4Sub(s4Index);
+    } else {
+      // 全完了
+      document.getElementById('s4-next').disabled = false;
+      document.getElementById('s4-speech').innerHTML = '🎉 4つとも完了！金属はみんな電子を<b>失って</b>陽イオンになる仲間だね';
+    }
+  }, 2200);
+}
+
+// ============================================================
+// Stage 5: 陰イオンになる原子たち（Cl→O→S）
+// ============================================================
+const STAGE5_ATOMS = ['Cl', 'O', 'S'];
+let s5Index = 0;
+let s5State = null;  // {atom, gainedCount, slots, completed}
+
+function initStage5() {
+  s5Index = 0;
+  startStage5Sub(0);
+  document.getElementById('s5-next').disabled = true;
+  document.getElementById('s5-gain-e').style.display = 'block';
+  renderS5Subnav();
+}
+
+function renderS5Subnav() {
+  const nav = document.getElementById('s5-subnav');
+  nav.innerHTML = '';
+  STAGE5_ATOMS.forEach((sym, i) => {
+    const d = document.createElement('div');
+    d.className = 'subdot';
+    if (i < s5Index) d.classList.add('done');
+    if (i === s5Index && s5State && s5State.completed) d.classList.add('done');
+    nav.appendChild(d);
+    if (i < STAGE5_ATOMS.length - 1) {
+      const arr = document.createElement('span');
+      arr.style.fontSize = '11px';
+      arr.style.color = '#aaa';
+      arr.textContent = '→';
+      nav.appendChild(arr);
+    }
+  });
+}
+
+function startStage5Sub(i) {
+  const atom = atomBySym(STAGE5_ATOMS[i]);
+  s5State = { atom, gainedCount: 0, slots: [], completed: false };
+
+  const speech = document.getElementById('s5-speech');
+  const gainN = atom.ionizesTo.gain;
+  const outer = atom.conf[atom.conf.length-1];
+  const cap = atom.conf.length === 2 ? 8 : (atom.conf.length === 3 ? 8 : 8); // L=8, M=8
+  speech.innerHTML = `<b>${atom.ja} ${atom.sym}</b> は最外殻に電子が <span class="strong">${outer}個</span>。<br>` +
+                     `あと <b style="color:var(--gain-color)">${gainN}個</b>もらえば、最外殻が「ピッタリ満タン」（${atom.ionizesTo.sameAs}と同じ）になるよ`;
+
+  document.getElementById('s5-symbol').textContent = atom.sym;
+  document.getElementById('s5-symbol').style.color = 'var(--anion-accent)';
+  document.getElementById('s5-badge').innerHTML = '';
+  document.getElementById('s5-conf').textContent = confToString(atom.conf);
+  document.getElementById('s5-conf').classList.remove('match');
+  document.getElementById('s5-count').textContent = '0';
+  document.getElementById('s5-compare').style.display = 'none';
+  document.getElementById('s5-compare').innerHTML = '';
+  document.getElementById('s5-gain-e').style.display = 'block';
+
+  // 空きスロットを計算（最外殻のあと何個入るか）
+  const wrap = document.getElementById('s5-svg-wrap');
+  wrap.innerHTML = '';
+  const cx = SVG_SIZE_BIG/2, cy = SVG_SIZE_BIG/2;
+  const radii = SHELL_RADII;
+  const lastShell = atom.conf.length - 1;
+  const lastCount = atom.conf[lastShell];
+  const lastCap = 8; // 中3範囲では最外殻は最大8（K殻=2の例外はあるが、Cl/O/Sは該当しない）
+  const slots = [];
+  // 全体の電子配置を「もし満タンだったら」として角度計算
+  const totalAtFull = lastCap;
+  for (let i = 0; i < lastCap - lastCount; i++) {
+    const slotIdx = lastCount + i;
+    const ang = -Math.PI/2 + (Math.PI*2/totalAtFull) * slotIdx;
+    slots.push({
+      shell: lastShell,
+      slotIdx: i,
+      x: cx + radii[lastShell] * Math.cos(ang),
+      y: cy + radii[lastShell] * Math.sin(ang),
+    });
+  }
+  s5State.slots = slots;
+
+  // 最外殻の既存電子を、満タン配置の前半 (0 〜 lastCount-1) の角度に置く必要
+  // → renderAtomは現在のconfで均等配置するが、空きと位置を合わせる必要があるので、
+  //   ここではcustom配置: 既存電子をlastCap個の角度の最初のlastCount個に置く
+  const svg = svgEl('svg', {
+    viewBox: `0 0 ${SVG_SIZE_BIG} ${SVG_SIZE_BIG}`,
+    width: SVG_SIZE_BIG,
+    height: SVG_SIZE_BIG,
+    class: 'atom-svg'
+  });
+  // 殻線
+  for (let s = 0; s < atom.conf.length; s++) {
+    svg.appendChild(svgEl('circle', {
+      cx, cy, r: radii[s],
+      class: 'shell-line shell-' + ['K','L','M','N'][s]
+    }));
+  }
+  // 原子核
+  svg.appendChild(svgEl('circle', {
+    cx, cy, r: NUCLEUS_R,
+    class: 'nucleus',
+    fill: 'url(#grad-nucleus-anion)'
+  }));
+  const symText = svgEl('text', { x: cx, y: cy - 2, class: 'nucleus-text', 'font-size': 13 });
+  symText.textContent = atom.sym;
+  svg.appendChild(symText);
+  const zText = svgEl('text', { x: cx, y: cy + 9, class: 'nucleus-text', 'font-size': 9, opacity: 0.85 });
+  zText.textContent = atom.z;
+  svg.appendChild(zText);
+
+  // 内側の殻の電子（通常配置）
+  for (let s = 0; s < lastShell; s++) {
+    const n = atom.conf[s];
+    for (let i = 0; i < n; i++) {
+      const ang = -Math.PI/2 + (Math.PI*2/n) * i;
+      svg.appendChild(svgEl('circle', {
+        cx: cx + radii[s] * Math.cos(ang),
+        cy: cy + radii[s] * Math.sin(ang),
+        r: 7,
+        class: 'electron',
+        'data-shell': s, 'data-idx': i, 'data-role': 'normal'
+      }));
+    }
+  }
+  // 最外殻の既存電子（満タン配置の最初のlastCount個に配置）
+  for (let i = 0; i < lastCount; i++) {
+    const ang = -Math.PI/2 + (Math.PI*2/lastCap) * i;
+    svg.appendChild(svgEl('circle', {
+      cx: cx + radii[lastShell] * Math.cos(ang),
+      cy: cy + radii[lastShell] * Math.sin(ang),
+      r: 7,
+      class: 'electron',
+      'data-shell': lastShell, 'data-idx': i, 'data-role': 'normal'
+    }));
+  }
+  // 空きスロット（残り）
+  for (const sl of slots) {
+    svg.appendChild(svgEl('circle', {
+      cx: sl.x, cy: sl.y, r: 7,
+      class: 'slot',
+      'data-slot-idx': sl.slotIdx
+    }));
+  }
+  wrap.appendChild(svg);
+  renderS5Subnav();
+}
+
+function onGainElectron() {
+  if (!s5State || s5State.completed) return;
+  ensureAudio();
+  if (s5State.slots.length === 0) return;
+  // 最初のスロットに電子を入れる
+  const slot = s5State.slots.shift();
+  const wrap = document.getElementById('s5-svg-wrap');
+  const svg = wrap.querySelector('svg');
+  const slotEl = svg.querySelector(`.slot[data-slot-idx="${slot.slotIdx}"]`);
+  if (slotEl) {
+    // スロットを電子に変換
+    slotEl.classList.remove('slot');
+    slotEl.classList.add('electron');
+    slotEl.setAttribute('data-role', 'normal');
+    slotEl.removeAttribute('data-slot-idx');
+  }
+  sfxPop();
+  s5State.gainedCount++;
+  document.getElementById('s5-count').textContent = s5State.gainedCount;
+
+  const need = s5State.atom.ionizesTo.gain;
+  if (s5State.gainedCount >= need) {
+    setTimeout(() => completeStage5Sub(), 600);
+  }
+}
+
+function completeStage5Sub() {
+  if (!s5State) return;
+  s5State.completed = true;
+  const atom = s5State.atom;
+  const it = atom.ionizesTo;
+
+  document.getElementById('s5-symbol').textContent = it.becomes;
+  document.getElementById('s5-badge').innerHTML = `<span class="valence-badge minus">${it.valence}</span>`;
+  const newConfStr = confToString(it.newConf);
+  document.getElementById('s5-conf').innerHTML = newConfStr + ' <span class="match">←' + it.sameAs + 'と同じ</span>';
+  document.getElementById('s5-conf').classList.add('match');
+  document.getElementById('s5-gain-e').style.display = 'none';
+
+  const cmp = document.getElementById('s5-compare');
+  cmp.style.display = 'flex';
+  cmp.innerHTML = '';
+
+  const ionAtomVirtual = {z: atom.z, sym: it.becomes, conf: it.newConf, isNoble:false};
+  const noble = atomBySym(it.sameAs);
+
+  const leftCard = document.createElement('div');
+  leftCard.className = 'atom-card';
+  leftCard.appendChild(renderAtom(ionAtomVirtual, {
+    size: SVG_SIZE_MID,
+    nucleusVariant: 'anion',
+    fullShells: ionAtomVirtual.conf.map((_,i)=>i),
+    symbolOverride: it.becomes
+  }));
+  const lLabel = document.createElement('div');
+  lLabel.style.fontSize='12px';
+  lLabel.style.fontWeight='bold';
+  lLabel.innerHTML = `<span style="color:var(--anion-accent)">${it.becomes}</span> ${newConfStr}`;
+  leftCard.appendChild(lLabel);
+
+  const rightCard = document.createElement('div');
+  rightCard.className = 'atom-card';
+  rightCard.appendChild(renderAtom(noble, {
+    size: SVG_SIZE_MID,
+    fullShells: noble.conf.map((_,i)=>i)
+  }));
+  const rLabel = document.createElement('div');
+  rLabel.style.fontSize='12px';
+  rLabel.style.fontWeight='bold';
+  rLabel.innerHTML = `${noble.sym} ${confToString(noble.conf)}`;
+  rightCard.appendChild(rLabel);
+
+  const eq = document.createElement('div');
+  eq.style.fontSize = '24px';
+  eq.style.color = 'var(--noble-gold)';
+  eq.style.fontWeight = 'bold';
+  eq.style.alignSelf = 'center';
+  eq.textContent = '=';
+
+  cmp.appendChild(leftCard);
+  cmp.appendChild(eq);
+  cmp.appendChild(rightCard);
+
+  sfxNoble();
+  sparkAt(svgCenterToPage('s5-svg-wrap'), '✨');
+
+  renderS5Subnav();
+
+  setTimeout(() => {
+    if (s5Index < STAGE5_ATOMS.length - 1) {
+      s5Index++;
+      startStage5Sub(s5Index);
+    } else {
+      document.getElementById('s5-next').disabled = false;
+      document.getElementById('s5-speech').innerHTML = '🎉 3つとも完了！非金属はみんな電子を<b>もらって</b>陰イオンになる仲間だね';
+    }
+  }, 2200);
+}
+
+// ============================================================
+// Stage 6: 価数を見つけよう
+// ============================================================
+const STAGE6_ATOMS = [
+  {sym:'Na', valence:+1},
+  {sym:'Mg', valence:+2},
+  {sym:'K',  valence:+1},
+  {sym:'Ca', valence:+2},
+  {sym:'Cl', valence:-1},
+  {sym:'O',  valence:-2},
+  {sym:'S',  valence:-2},
+];
+const VALENCE_BADGES = [+1, +2, -1, -2];
+let s6SelectedBadge = null;
+let s6Solved = {};
+
+function initStage6() {
+  s6Solved = {};
+  s6SelectedBadge = null;
+  document.getElementById('s6-next').disabled = true;
+  renderStage6();
+}
+
+function renderStage6() {
+  const cationGrid = document.getElementById('s6-cation-grid');
+  const anionGrid = document.getElementById('s6-anion-grid');
+  cationGrid.innerHTML = '';
+  anionGrid.innerHTML = '';
+
+  STAGE6_ATOMS.forEach(({sym, valence}) => {
+    const atom = atomBySym(sym);
+    const cell = document.createElement('div');
+    cell.className = 'gcell ' + (valence > 0 ? 'cation' : 'anion');
+    cell.dataset.sym = sym;
+    cell.appendChild(renderAtom(atom, {size: SVG_SIZE_SMALL}));
+    const name = document.createElement('div');
+    name.className = 'gname';
+    name.textContent = `${atom.sym} (${atom.ja})`;
+    cell.appendChild(name);
+    const conf = document.createElement('div');
+    conf.className = 'gconf';
+    conf.textContent = confToString(atom.conf);
+    cell.appendChild(conf);
+    const badgeSlot = document.createElement('div');
+    badgeSlot.className = 'gbadge empty';
+    cell.appendChild(badgeSlot);
+
+    cell.addEventListener('click', () => onCellClick(cell, sym, valence));
+    if (valence > 0) cationGrid.appendChild(cell);
+    else anionGrid.appendChild(cell);
+  });
+
+  // バッジバー
+  const bar = document.getElementById('s6-badges');
+  bar.innerHTML = '';
+  const hint = document.createElement('div');
+  hint.style.fontSize = '11px';
+  hint.style.color = '#666';
+  hint.style.fontWeight = 'bold';
+  hint.style.width = '100%';
+  hint.style.textAlign = 'center';
+  hint.style.marginBottom = '4px';
+  hint.textContent = '① バッジを選ぶ → ② 原子をタップ';
+  bar.appendChild(hint);
+  VALENCE_BADGES.forEach(v => {
+    const b = document.createElement('div');
+    b.className = 'vbadge ' + (v > 0 ? 'plus' : 'minus');
+    b.textContent = (v > 0 ? '+' : '') + v;
+    b.dataset.v = v;
+    b.addEventListener('click', () => onBadgeClick(b, v));
+    bar.appendChild(b);
+  });
+}
+
+function onBadgeClick(badgeEl, v) {
+  ensureAudio();
+  sfxClick();
+  document.querySelectorAll('#s6-badges .vbadge').forEach(b => b.classList.remove('selected'));
+  badgeEl.classList.add('selected');
+  s6SelectedBadge = v;
+}
+
+function onCellClick(cell, sym, correctValence) {
+  if (s6Solved[sym]) return;
+  if (s6SelectedBadge === null) {
+    sfxReject();
+    return;
+  }
+  ensureAudio();
+  const slot = cell.querySelector('.gbadge');
+  slot.className = 'gbadge';
+  slot.innerHTML = `<span class="valence-badge ${s6SelectedBadge>0?'plus':'minus'}">${s6SelectedBadge>0?'+':''}${s6SelectedBadge}</span>`;
+  if (s6SelectedBadge === correctValence) {
+    cell.classList.add('solved', 'correct');
+    s6Solved[sym] = true;
+    sfxSuccess();
+    sparkAt(centerOfElement(cell), '✨');
+    if (Object.keys(s6Solved).length >= STAGE6_ATOMS.length) {
+      document.getElementById('s6-next').disabled = false;
+    }
+  } else {
+    sfxReject();
+    setTimeout(() => {
+      slot.className = 'gbadge empty';
+      slot.innerHTML = '';
+    }, 800);
+  }
+  // 選択解除
+  document.querySelectorAll('#s6-badges .vbadge').forEach(b => b.classList.remove('selected'));
+  s6SelectedBadge = null;
+}
+
+// ============================================================
+// Stage 7: 確認テスト
+// ============================================================
+const QUIZ = [
+  {
+    q: 'Mg²⁺ はどの希ガスと同じ電子配置？',
+    choices: ['He (2)', 'Ne (2,8)', 'Ar (2,8,8)'],
+    correct: 1,
+    hint: 'Mgは(2,8,2)で、電子を2個失うと(2,8)になる→Ne！'
+  },
+  {
+    q: 'K⁺ はどの希ガスと同じ電子配置？',
+    choices: ['He (2)', 'Ne (2,8)', 'Ar (2,8,8)'],
+    correct: 2,
+    hint: 'Kは(2,8,8,1)で、電子を1個失うと(2,8,8)になる→Ar！'
+  },
+  {
+    q: 'O²⁻ はどの希ガスと同じ電子配置？',
+    choices: ['He (2)', 'Ne (2,8)', 'Ar (2,8,8)'],
+    correct: 1,
+    hint: 'Oは(2,6)で、電子を2個もらうと(2,8)になる→Ne！'
+  },
+  {
+    q: 'Na原子の最も外側の殻はどれ？',
+    choices: ['K殻', 'L殻', 'M殻'],
+    correct: 2,
+    hint: 'Naは(2,8,1)。K殻=2, L殻=8 まで埋まって、M殻に1個あるね'
+  },
+  {
+    q: 'S が安定するには電子をどうする？',
+    choices: ['1個もらう', '2個もらう', '2個失う'],
+    correct: 1,
+    hint: 'Sは(2,8,6)。あと2個もらうと(2,8,8)でArと同じ電子配置になるよ'
+  }
+];
+let s7Index = 0;
+let s7Score = 0;
+
+function initStage7() {
+  s7Index = 0;
+  s7Score = 0;
+  document.getElementById('s7-feedback').style.display = 'none';
+  showQuestion(0);
+  document.getElementById('s7-next').disabled = true;
+  document.getElementById('s7-next').textContent = '次の問題 →';
+  document.getElementById('s7-next').onclick = nextQuestion;
+}
+
+function showQuestion(i) {
+  const q = QUIZ[i];
+  document.getElementById('s7-progress').textContent = `第 ${i+1} 問 / ${QUIZ.length} 問`;
+  document.getElementById('s7-q').textContent = q.q;
+  const choicesEl = document.getElementById('s7-choices');
+  choicesEl.innerHTML = '';
+  q.choices.forEach((c, idx) => {
+    const btn = document.createElement('div');
+    btn.className = 'choice';
+    btn.textContent = c;
+    btn.addEventListener('click', () => onAnswer(idx));
+    choicesEl.appendChild(btn);
+  });
+  document.getElementById('s7-feedback').style.display = 'none';
+  document.getElementById('s7-next').disabled = true;
+}
+
+function onAnswer(idx) {
+  ensureAudio();
+  const q = QUIZ[s7Index];
+  const choices = document.querySelectorAll('#s7-choices .choice');
+  choices.forEach((c, i) => {
+    c.style.pointerEvents = 'none';
+    if (i === q.correct) c.classList.add('correct');
+    if (i === idx && i !== q.correct) c.classList.add('wrong');
+  });
+  const fb = document.getElementById('s7-feedback');
+  fb.style.display = 'block';
+  if (idx === q.correct) {
+    s7Score++;
+    fb.textContent = '✨ 正解！ ' + q.hint;
+    sfxSuccess();
+  } else {
+    fb.textContent = '惜しい！ ヒント: ' + q.hint;
+    sfxReject();
+  }
+  document.getElementById('s7-next').disabled = false;
+  if (s7Index === QUIZ.length - 1) {
+    document.getElementById('s7-next').textContent = `修了 (${s7Score}/${QUIZ.length}) →`;
+    document.getElementById('s7-next').onclick = showFinale;
+  }
+}
+
+function nextQuestion() {
+  ensureAudio();
+  sfxClick();
+  s7Index++;
+  if (s7Index < QUIZ.length) {
+    showQuestion(s7Index);
+  }
+}
+
+// ============================================================
+// 共通ユーティリティ
+// ============================================================
+function sparkAt(pt, text='✨') {
+  const s = document.createElement('div');
+  s.className = 'spark';
+  s.textContent = text;
+  s.style.left = pt.x + 'px';
+  s.style.top = pt.y + 'px';
+  document.getElementById('app').appendChild(s);
+  setTimeout(() => s.remove(), 800);
+}
+
+function centerOfElement(el) {
+  const app = document.getElementById('app');
+  const ar = app.getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width/2 - ar.left, y: r.top + r.height/2 - ar.top };
+}
+
+function svgCenterToPage(wrapId) {
+  const el = document.getElementById(wrapId);
+  if (!el) return {x: 0, y: 0};
+  return centerOfElement(el);
+}
+
+function restart() {
+  setStage(1);
+}
+
+// ============================================================
+// 起動
+// ============================================================
+window.addEventListener('load', () => {
+  initStage1();
+  // 初回タップで AudioContext 起動
+  document.body.addEventListener('click', ensureAudio, {once:true});
+  document.body.addEventListener('touchstart', ensureAudio, {once:true});
+});
+</script>
+</body>
+</html>
