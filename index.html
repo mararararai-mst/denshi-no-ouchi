@@ -433,7 +433,11 @@ body[data-stage="5"] .stage-label { background: #c0d8ff; color: #2050a0; }
   align-items: center;
   gap: 6px;
   padding: 4px 12px;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
+.ionize-area::-webkit-scrollbar { width: 4px; }
+.ionize-area::-webkit-scrollbar-thumb { background: #ccd; border-radius: 2px; }
 .ionize-area .speech {
   background: rgba(255,255,255,0.96);
   padding: 7px 14px;
@@ -1457,8 +1461,11 @@ let s4State = null;  // {atom, lostCount, completed}
 
 function initStage4() {
   s4Index = 0;
+  const nextBtn = document.getElementById('s4-next');
+  nextBtn.disabled = true;
+  nextBtn.textContent = '次のイオン →';
+  nextBtn.onclick = null;
   startStage4Sub(0);
-  document.getElementById('s4-next').disabled = true;
   renderS4Subnav();
 }
 
@@ -1484,6 +1491,7 @@ function renderS4Subnav() {
 function startStage4Sub(i) {
   const atom = atomBySym(STAGE4_ATOMS[i]);
   s4State = { atom, lostCount: 0, completed: false };
+  document.getElementById('s4-next').disabled = true;
 
   const speech = document.getElementById('s4-speech');
   const loseN = atom.ionizesTo.lose;
@@ -1608,17 +1616,21 @@ function completeStage4Sub() {
 
   renderS4Subnav();
 
-  // 次のサブステップへ自動遷移 or 完了ボタン有効化
+  // 自動進行せず、ボタンで手動進行（じっくり解説を見られるように）
+  const nextBtn = document.getElementById('s4-next');
+  nextBtn.disabled = false;
+  if (s4Index < STAGE4_ATOMS.length - 1) {
+    nextBtn.textContent = '次のイオン →';
+    nextBtn.onclick = () => { s4Index++; startStage4Sub(s4Index); };
+  } else {
+    nextBtn.textContent = '次へ →';
+    nextBtn.onclick = goStage4Extra;
+  }
+  // 解説エリア（希ガスとの比較）へ自動スクロール
   setTimeout(() => {
-    if (s4Index < STAGE4_ATOMS.length - 1) {
-      s4Index++;
-      startStage4Sub(s4Index);
-    } else {
-      // 全完了
-      document.getElementById('s4-next').disabled = false;
-      document.getElementById('s4-speech').innerHTML = '🎉 4つとも完了！金属はみんな電子を<b>失って</b>陽イオンになる仲間だね';
-    }
-  }, 2200);
+    const area = document.getElementById('s4-area');
+    if (area) area.scrollTo({ top: area.scrollHeight, behavior: 'smooth' });
+  }, 450);
 }
 
 // ============================================================
@@ -1630,8 +1642,11 @@ let s5State = null;  // {atom, gainedCount, slots, completed}
 
 function initStage5() {
   s5Index = 0;
+  const nextBtn = document.getElementById('s5-next');
+  nextBtn.disabled = true;
+  nextBtn.textContent = '次のイオン →';
+  nextBtn.onclick = null;
   startStage5Sub(0);
-  document.getElementById('s5-next').disabled = true;
   document.getElementById('s5-gain-e').style.display = 'block';
   renderS5Subnav();
 }
@@ -1658,6 +1673,7 @@ function renderS5Subnav() {
 function startStage5Sub(i) {
   const atom = atomBySym(STAGE5_ATOMS[i]);
   s5State = { atom, gainedCount: 0, slots: [], completed: false };
+  document.getElementById('s5-next').disabled = true;
 
   const speech = document.getElementById('s5-speech');
   const gainN = atom.ionizesTo.gain;
@@ -1853,15 +1869,21 @@ function completeStage5Sub() {
 
   renderS5Subnav();
 
+  // 自動進行せず、ボタンで手動進行
+  const nextBtn = document.getElementById('s5-next');
+  nextBtn.disabled = false;
+  if (s5Index < STAGE5_ATOMS.length - 1) {
+    nextBtn.textContent = '次のイオン →';
+    nextBtn.onclick = () => { s5Index++; startStage5Sub(s5Index); };
+  } else {
+    nextBtn.textContent = '次へ →';
+    nextBtn.onclick = () => setStage(6);
+  }
+  // 解説エリア（希ガスとの比較）へ自動スクロール
   setTimeout(() => {
-    if (s5Index < STAGE5_ATOMS.length - 1) {
-      s5Index++;
-      startStage5Sub(s5Index);
-    } else {
-      document.getElementById('s5-next').disabled = false;
-      document.getElementById('s5-speech').innerHTML = '🎉 3つとも完了！非金属はみんな電子を<b>もらって</b>陰イオンになる仲間だね';
-    }
-  }, 2200);
+    const area = document.getElementById('s5-area');
+    if (area) area.scrollTo({ top: area.scrollHeight, behavior: 'smooth' });
+  }, 450);
 }
 
 // ============================================================
